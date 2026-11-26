@@ -1,0 +1,4 @@
+# Optional V3.1 visual BEFORE/AFTER capture.
+# Playwright browsers are NOT bundled: install Chromium explicitly.
+playwright>=1.45
+# Then: python -m playwright install chromium

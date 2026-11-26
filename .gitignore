@@ -1,0 +1,26 @@
+# Python / virtual env
+.venv/
+.playwright/
+runtime/
+__pycache__/
+*.pyc
+*.pyo
+
+# Local secrets and local state (NEVER commit)
+.env
+!.env.example
+logs/
+reports/
+*.log
+*.bak
+*.tmp
+
+# Transient local scan artefacts
+wsl/php84/
+127.0.0.1_p*.json
+*_p????-*.json
+*.pdf
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,16 @@
+id: aegis-reflected-xss
+info:
+  name: AegisAI Lab - Reflected XSS Probe
+  author: aegis-ai
+  severity: high
+  description: Unescaped reflection of a script marker in the HTML response.
+  tags: aegis,xss
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/search?q=A3gisXssMarker%3Cscript%3Ealert(1)%3C%2Fscript%3E"
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<script>alert(1)</script>"

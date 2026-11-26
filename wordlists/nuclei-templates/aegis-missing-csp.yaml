@@ -1,0 +1,21 @@
+id: aegis-missing-csp
+info:
+  name: AegisAI Lab - Missing Content-Security-Policy
+  author: aegis-ai
+  severity: medium
+  description: Response is served without a Content-Security-Policy header.
+  tags: aegis,misconfiguration,header
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: header
+        words:
+          - "Content-Security-Policy"
+        negative: true

@@ -1,0 +1,16 @@
+id: aegis-server-version
+info:
+  name: AegisAI Lab - Server Version Disclosure
+  author: aegis-ai
+  severity: low
+  description: Verbose Server header leaks the Werkzeug/Python version.
+  tags: aegis,disclosure
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers:
+      - type: regex
+        part: header
+        regex:
+          - '(?i)server:\s*Werkzeug'

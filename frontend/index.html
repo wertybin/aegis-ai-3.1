@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AEGIS-AI // v3.1</title>
+  <link rel="icon" href="aegis.ico" type="image/x-icon" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="agent.css?v=2" />
+</head>
+<body>
+  <!-- Top Status Bar + Primary Navigation -->
+  <header class="top-bar">
+    <div class="brand">
+      <span class="pulse-dot"></span>
+      <h1 class="brand-title">
+        <span id="brandType" class="brand-type" aria-label="AEGIS-AI">AEGIS-AI</span><span class="brand-caret" aria-hidden="true"></span>
+        <span class="version">// v3.1</span>
+      </h1>
+    </div>
+
+    <nav class="nav-bar" aria-label="Primary navigation">
+      <div class="nav-group">
+        <button type="button" class="nav-btn" data-menu="scanMenu">SCAN <span class="caret">▾</span></button>
+        <div class="nav-menu" id="scanMenu">
+          <button type="button" id="quickScanBtn" class="nav-item">
+            <span class="nav-item-title">⚡ Quick Scan</span>
+            <span class="nav-item-sub">5-stage static audit</span>
+          </button>
+          <button type="button" id="fullAuditBtn" class="nav-item">
+            <span class="nav-item-title">🛡 Full Audit</span>
+            <span class="nav-item-sub">9-stage DAST pipeline</span>
+          </button>
+          <button type="button" id="historyBtn" class="nav-item">
+            <span class="nav-item-title">🕘 Scan History</span>
+            <span class="nav-item-sub">persisted real scans</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <button type="button" class="nav-btn" data-menu="intelMenu">INTELLIGENCE <span class="caret">▾</span></button>
+        <div class="nav-menu" id="intelMenu">
+          <button type="button" id="overviewBtn" class="nav-item">
+            <span class="nav-item-title">◈ Overview</span>
+            <span class="nav-item-sub">live security posture</span>
+          </button>
+          <button type="button" id="vulnCenterBtn" class="nav-item">
+            <span class="nav-item-title">◎ Vulnerability Center</span>
+            <span class="nav-item-sub">CVSS · CVE · evidence</span>
+          </button>
+          <button type="button" id="surfaceBtn" class="nav-item">
+            <span class="nav-item-title">⌁ Attack Surface</span>
+            <span class="nav-item-sub">subdomains · endpoints · tech</span>
+          </button>
+          <button type="button" id="graphBtn" class="nav-item">
+            <span class="nav-item-title">✧ Attack Graph</span>
+            <span class="nav-item-sub">evidence &amp; theoretical edges</span>
+          </button>
+          <button type="button" id="aiIntelBtn" class="nav-item">
+            <span class="nav-item-title">✦ AI Intelligence</span>
+            <span class="nav-item-sub">correlation · guardrail</span>
+          </button>
+          <button type="button" id="apiSecBtn" class="nav-item">
+            <span class="nav-item-title">⇄ API Security</span>
+            <span class="nav-item-sub">endpoint risk &amp; controls</span>
+          </button>
+          <button type="button" id="monitorBtn" class="nav-item">
+            <span class="nav-item-title">◉ Continuous Monitoring</span>
+            <span class="nav-item-sub">localhost drift watcher</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- V3 — additive deep engine modules. The existing 9-stage pipeline is unchanged. -->
+      <div class="nav-group">
+        <button type="button" class="nav-btn" data-menu="deepMenu">DEEP ENGINE <span class="caret">▾</span></button>
+        <div class="nav-menu" id="deepMenu">
+          <button type="button" id="agentModeBtn" class="nav-item nav-agent">
+            <span class="nav-item-title">⌬ Agent Mode <span class="agent-beta">NEW</span></span>
+            <span class="nav-item-sub">Gemini plans · 2+ tools · evidence</span>
+          </button>
+          <button type="button" id="toolCenterBtn" class="nav-item">
+            <span class="nav-item-title">⚙ Tool Management Center</span>
+            <span class="nav-item-sub">11 modules · live status</span>
+          </button>
+          <button type="button" id="deepLabBtn" class="nav-item">
+            <span class="nav-item-title">⬡ Deep Security Lab</span>
+            <span class="nav-item-sub">real tool execution &amp; evidence</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <button type="button" class="nav-btn" data-menu="respondMenu">RESPOND <span class="caret">▾</span></button>
+        <div class="nav-menu" id="respondMenu">
+          <button type="button" id="remediationBtn" class="nav-item">
+            <span class="nav-item-title">🛠 Remediation Center</span>
+            <span class="nav-item-sub">approval-gated patches</span>
+          </button>
+          <button type="button" id="verifyBtn" class="nav-item">
+            <span class="nav-item-title">✓ Fix Verification</span>
+            <span class="nav-item-sub">before vs after proof</span>
+          </button>
+          <button type="button" id="compareBtn" class="nav-item">
+            <span class="nav-item-title">↔ Before &amp; After</span>
+            <span class="nav-item-sub">real scan comparison</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="button" id="reportsBtn" class="nav-btn nav-direct">REPORTS</button>
+      <button type="button" id="copilotBtn" class="nav-btn nav-direct nav-accent">✦ AI COPILOT</button>
+      <button type="button" id="devBtn" class="nav-btn nav-direct nav-dev" title="Developer console">⌨ DEV</button>
+      <button type="button" id="settingsBtn" class="nav-btn nav-icon" title="Settings / Diagnostics">⚙</button>
+    </nav>
+
+    <div class="badges">
+      <span class="badge badge-scope">SCOPE: YOUR LOCALHOST</span>
+      <span class="badge badge-guard">GUARDRAIL: ACTIVE</span>
+      <a class="badge badge-support" href="https://t.me/wertybin" target="_blank" rel="noopener">QUESTIONS: @WERTYBIN</a>
+    </div>
+  </header>
+
+  <!-- Center Command Hub -->
+  <section class="command-hub">
+    <div class="input-wrapper">
+      <input
+        type="text"
+        id="targetInput"
+        value=""
+        placeholder="Enter your localhost URL or local file path..."
+      />
+      <button id="startAuditBtn" class="btn-primary">[ START AUDIT ]</button>
+      <button id="dastBtn" class="btn-primary btn-dast">[ RUN DAST ]</button>
+    </div>
+
+    <div class="site-switch">
+      <span>NO TARGETS ARE BUNDLED — ENTER YOUR OWN LOCALHOST URL ABOVE.</span>
+    </div>
+
+    <!-- 9-Stage Pipeline Progress Bar -->
+    <div class="pipeline" id="pipelineBar">
+      <div class="stage" data-step="1">1. Tool Check</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="2">2. DNS Recon</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="3">3. Nmap Scan</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="4">4. ffuf</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="5">5. gofile</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="6">6. sqlmap</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="7">7. OWASP ZAP</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="8">8. Nuclei</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-step="9">9. Guardrail &amp; PDF</div>
+    </div>
+  </section>
+
+  <!-- Slim Engine Control Strip -->
+  <section class="engine-bar">
+    <span class="engine-pill">ENGINE <strong id="engineStatus">IDLE</strong></span>
+    <span class="engine-meta">SCAN <code id="scanIdLabel">--</code></span>
+    <span class="engine-meta">ELAPSED <strong id="scanElapsed">0.0s</strong></span>
+    <div class="engine-actions">
+      <button id="cancelScanBtn" class="btn-engine btn-cancel" disabled>[ CANCEL SCAN ]</button>
+      <button id="retryStageBtn" class="btn-engine" disabled>[ RETRY FAILED STAGE ]</button>
+    </div>
+  </section>
+
+  <!-- Split Workspace -->
+  <main class="workspace">
+    <!-- Left Panel: Live Execution Console -->
+    <section class="panel console-panel">
+      <div class="panel-header">
+        <h2>LIVE EXECUTION CONSOLE</h2>
+        <span class="tag">SSE STREAM</span>
+      </div>
+      <div id="consoleOutput" class="console-body">
+        <div class="log-line muted">&gt; AegisAI Defensive Engine standing by...</div>
+      </div>
+    </section>
+
+    <!-- Right Panel: AegisAI Analysis Chat -->
+    <section class="panel chat-panel">
+      <div class="panel-header">
+        <h2>AEGIS-AI ANALYSIS &amp; REMEDIATION</h2>
+        <div class="header-actions">
+          <span id="scoreBadge" class="score-badge">SCORE: --/100</span>
+          <a id="downloadPdfBtn" href="/api/download-report" target="_blank" class="btn-secondary hidden">[ DOWNLOAD PDF ]</a>
+        </div>
+      </div>
+      <div id="chatFeed" class="chat-body">
+        <div class="chat-msg system">
+          Enter a local target above and click <strong>[ START AUDIT ]</strong> to inspect routes, detect OWASP weaknesses, generate a PDF report, and apply automated patches.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- V2 Attack Surface / Attack Graph Drawer -->
+  <aside id="intelPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2 id="intelTitle">INTELLIGENCE VIEW</h2>
+      <button id="closeIntelBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="intelStats" class="intel-stats"></div>
+    <div id="intelBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 6 — Approval-gated Remediation Center -->
+  <aside id="remediationPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>REMEDIATION CENTER</h2>
+      <button id="closeRemediationBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="remediationStats" class="intel-stats"></div>
+    <div id="remediationBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 7 — Fix Verification -->
+  <aside id="verificationPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>FIX VERIFICATION</h2>
+      <button id="closeVerificationBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="verificationStats" class="intel-stats"></div>
+    <div id="verificationBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 8 — Before & After scan comparison -->
+  <aside id="comparisonPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>BEFORE &amp; AFTER</h2>
+      <button id="closeComparisonBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="comparisonStats" class="intel-stats"></div>
+    <div id="visualCompareCard" class="intel-card visual-compare">
+      <div class="remediation-section">VISUAL PROOF — REAL SCREENSHOTS (OPTIONAL PLAYWRIGHT CAPTURE)</div>
+      <div class="agent-input-grid">
+        <label class="agent-field">Authorized target
+          <input id="visualTargetInput" type="text" value="" placeholder="Your localhost URL" spellcheck="false" />
+        </label>
+        <label class="agent-field">Snapshot label
+          <input id="visualLabelInput" type="text" placeholder="before / after" spellcheck="false" />
+        </label>
+      </div>
+      <div class="remediation-actions">
+        <button id="visualCaptureBtn" class="btn-engine btn-approve">[ CAPTURE SNAPSHOT ]</button>
+        <button id="visualLoadBtn" class="btn-engine">[ LOAD LAST PAIR ]</button>
+      </div>
+      <div id="visualCompareNote" class="tool-note muted">Loading capture availability…</div>
+      <div id="visualSlider" class="visual-slider hidden">
+        <img id="visualBefore" alt="Before screenshot" />
+        <img id="visualAfter" alt="After screenshot" />
+        <input id="visualRange" type="range" min="0" max="100" value="50" aria-label="Before / after slider" />
+      </div>
+    </div>
+    <div id="comparisonBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 9 — API Security -->
+  <aside id="apiSecPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>API SECURITY</h2>
+      <button id="closeApiSecBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="apiSecStats" class="intel-stats"></div>
+    <div id="apiSecBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 9 — Continuous Monitoring -->
+  <aside id="monitorPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>CONTINUOUS MONITORING</h2>
+      <button id="closeMonitorBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="monitorStats" class="intel-stats"></div>
+    <div id="monitorBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 10 — Overview / Dashboard -->
+  <aside id="overviewPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>OVERVIEW</h2>
+      <button id="closeOverviewBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="overviewStats" class="intel-stats"></div>
+    <div id="overviewBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 10 — Vulnerability Center -->
+  <aside id="vulnCenterPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>VULNERABILITY CENTER</h2>
+      <button id="closeVulnCenterBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="vulnCenterStats" class="intel-stats"></div>
+    <div id="vulnCenterBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 10 — AI Intelligence -->
+  <aside id="aiIntelPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>AI INTELLIGENCE</h2>
+      <button id="closeAiIntelBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="aiIntelStats" class="intel-stats"></div>
+    <div id="aiIntelBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 10 — Reports -->
+  <aside id="reportsPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>REPORTS</h2>
+      <button id="closeReportsBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="reportsStats" class="intel-stats"></div>
+    <div id="reportsBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V2 Phase 10 — AI Copilot -->
+  <aside id="copilotPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>AI COPILOT</h2>
+      <button id="closeCopilotBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="copilotStats" class="intel-stats"></div>
+    <div id="copilotBody" class="intel-body">
+      <div class="copilot-feed" id="copilotFeed"></div>
+      <div class="copilot-input-row">
+        <input id="copilotQuestion" class="remediation-note" placeholder="Ask about the latest real scan (e.g. top finding, CVSS, fixes)..." maxlength="800">
+        <button id="copilotAskBtn" class="btn-engine btn-apply">[ ASK ]</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- V3 — Tool Management Center (real availability / execution telemetry) -->
+  <aside id="toolCenterPanel" class="history-panel hidden" data-page-slug="tools">
+    <div class="history-header">
+      <h2>TOOL MANAGEMENT CENTER</h2>
+      <button id="closeToolCenterBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="toolCenterStats" class="intel-stats"></div>
+    <div id="toolCenterBody" class="intel-body"></div>
+  </aside>
+
+  <!-- V3 — Deep Security Lab (real execution, real evidence, unified correlation) -->
+  <aside id="deepLabPanel" class="history-panel hidden" data-page-slug="deep-lab">
+    <div class="history-header">
+      <h2>DEEP SECURITY LAB</h2>
+      <button id="closeDeepLabBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="deepLabStats" class="intel-stats"></div>
+    <div id="deepLabBody" class="intel-body">
+      <div class="intel-card">
+        <div class="remediation-section">AUTHORIZED SCOPE</div>
+        <div class="verify-metric"><span>Network target</span><strong>localhost / 127.0.0.1 only</strong></div>
+        <div class="verify-metric"><span>Source paths</span><strong>lab + explicitly configured local test apps</strong></div>
+        <div class="verify-metric"><span>Policy</span><strong>no exploit, no payload, no destructive test</strong></div>
+        <div class="deep-controls">
+          <label>Target <input id="deepTargetInput" type="text" value="" placeholder="Your localhost URL" spellcheck="false" /></label>
+          <label>Source path <input id="deepPathInput" type="text" placeholder="local lab path (optional)" spellcheck="false" /></label>
+          <button id="deepRunBtn" class="btn-engine btn-apply">[ RUN SELECTED TOOLS ]</button>
+          <button id="deepCorrelateBtn" class="btn-engine">[ CORRELATE RESULTS ]</button>
+          <button id="deepPdfBtn" class="btn-engine">[ DOWNLOAD DEEP PDF ]</button>
+        </div>
+        <div id="deepToolPicker" class="deep-tool-picker"></div>
+      </div>
+      <div id="deepFindings" class="deep-findings"></div>
+    </div>
+  </aside>
+
+  <!-- V3 — Agent Mode: model-driven task planning, real tool calls, evidence report -->
+  <aside id="agentPanel" class="history-panel hidden agent-page" data-page-slug="agent">
+    <div class="history-header">
+      <h2>AGENT MODE</h2>
+      <button id="closeAgentBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="agentStats" class="intel-stats"></div>
+    <div id="agentCounters" class="agent-counters hidden"></div>
+    <div id="agentBody" class="intel-body">
+      <section class="agent-hero">
+        <div class="agent-hero-copy">
+          <div class="agent-kicker">AUTONOMOUS DEFENSIVE SECURITY AGENT</div>
+          <h3>Give it a goal. It plans, calls real tools, observes, and reports.</h3>
+          <p>
+            Ollama/Qwen reads the task, chooses the next tool, receives the real observation,
+            and decides what to do next. No simulated findings. Scope is hard-locked to
+            the localhost targets you configure; exploits and payloads are never executed.
+          </p>
+        </div>
+        <div class="agent-diagram" aria-label="Agent architecture">
+          <div class="agent-node trigger"><span>01</span>TRIGGER<em>task</em></div>
+          <div class="agent-arrow">→</div>
+          <div class="agent-node model"><span>02</span>MODEL<em>Qwen</em></div>
+          <div class="agent-arrow">→</div>
+          <div class="agent-node tools"><span>03</span>TOOLS<em>11 real</em></div>
+          <div class="agent-arrow">→</div>
+          <div class="agent-node result"><span>04</span>RESULT<em>evidence</em></div>
+        </div>
+      </section>
+
+      <div class="intel-card agent-controls">
+        <div class="remediation-section">AUTHORIZED TASK — LOCAL SCOPE ONLY</div>
+        <label class="agent-field agent-task-field">Task
+          <textarea id="agentTaskInput" rows="2" maxlength="1200" spellcheck="false">Audit the authorized local application, correlate the findings, and report the top risks with evidence.</textarea>
+        </label>
+        <div class="agent-input-grid">
+          <label class="agent-field">Network target
+            <input id="agentTargetInput" type="text" value="" placeholder="Your localhost URL" spellcheck="false" />
+          </label>
+          <label class="agent-field">Source path
+            <input id="agentPathInput" type="text" value="" placeholder="Local source path inside this project" spellcheck="false" />
+          </label>
+        </div>
+        <label class="agent-toggle">
+          <input type="checkbox" id="agentAiToggle" checked />
+          <span>Use local model function calling <em>— Gemini is the optional fallback; if both are unavailable, the deterministic loop runs and says so.</em></span>
+        </label>
+        <div class="agent-buttons">
+          <button id="agentRunBtn" class="btn-engine btn-apply">[ RUN AGENT ]</button>
+          <button id="agentLoadLastBtn" class="btn-engine">[ LOAD LAST RUN ]</button>
+          <button id="agentStopBtn" class="btn-engine agent-stop hidden">[ STOP ]</button>
+        </div>
+        <div class="tool-note muted">
+          ALLOWED: your localhost / 127.0.0.1 targets · your configured local source paths. FORBIDDEN: external hosts,
+          exploitation, payloads, brute force, destructive tests. Every claim below comes from a real tool result.
+        </div>
+      </div>
+
+      <div class="agent-layout">
+        <div class="agent-column">
+          <div class="agent-section-title">
+            <span>LIVE AGENT TIMELINE</span>
+            <span id="agentModeBadge" class="agent-mode-badge idle">IDLE</span>
+          </div>
+          <div id="agentTimeline" class="agent-timeline">
+            <div class="agent-empty">Run the agent, or load the last real run from disk.</div>
+          </div>
+        </div>
+        <div class="agent-column">
+          <div class="agent-section-title"><span>TOOL OBSERVATIONS</span><span id="agentToolCount" class="agent-count">0</span></div>
+          <div id="agentTools" class="agent-tools">
+            <div class="agent-empty">No tool has run in this session yet.</div>
+          </div>
+          <div id="agentSeverity" class="agent-severity"></div>
+        </div>
+      </div>
+
+      <div id="agentReportWrap" class="intel-card agent-report-wrap hidden">
+        <div class="agent-section-title">
+          <span>FINAL EVIDENCE-BASED REPORT</span>
+          <span id="agentReportMeta" class="agent-report-meta"></span>
+        </div>
+        <div id="agentReport" class="agent-report"></div>
+        <div id="agentVerified" class="agent-verified"></div>
+        <div id="agentFindings" class="deep-findings"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- V3 — per-module full page: real status, config, logs, findings, single run -->
+  <aside id="toolDetailPanel" class="history-panel hidden" data-page-slug="module">
+    <div class="history-header">
+      <h2 id="toolDetailTitle">MODULE</h2>
+      <button id="closeToolDetailBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="toolDetailStats" class="intel-stats"></div>
+    <div id="toolDetailBody" class="intel-body">
+      <div class="intel-card">
+        <div class="remediation-section">MODULE CONTROLS — AUTHORIZED SCOPE ONLY</div>
+        <div class="deep-controls">
+          <label>Target <input id="moduleTargetInput" type="text" value="" placeholder="Your localhost URL" spellcheck="false" /></label>
+          <label>Source path <input id="modulePathInput" type="text" placeholder="local lab path" spellcheck="false" /></label>
+          <label>Container image (Trivy) <input id="moduleImageInput" type="text" placeholder="optional, allowlisted only" spellcheck="false" /></label>
+          <button id="moduleRunBtn" class="btn-engine btn-apply">[ RUN THIS MODULE ]</button>
+          <button id="moduleCheckBtn" class="btn-engine">[ RECHECK STATUS ]</button>
+          <button id="moduleGuideBtn" class="btn-engine">[ INSTALL GUIDE ]</button>
+          <button id="moduleBackBtn" class="btn-engine">[ ← BACK ]</button>
+        </div>
+        <div id="moduleGuide" class="tool-guide"></div>
+        <div id="moduleStatus"></div>
+      </div>
+      <div id="moduleFindings" class="deep-findings"></div>
+    </div>
+  </aside>
+
+  <!-- V2 Phase 10 — Settings -->
+  <aside id="settingsPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>SETTINGS / DIAGNOSTICS</h2>
+      <button id="closeSettingsBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="settingsStats" class="intel-stats"></div>
+    <div id="settingsBody" class="intel-body"></div>
+  </aside>
+
+  <!-- Developer console (real diagnostics only) -->
+  <aside id="devPanel" class="history-panel dev-page hidden">
+    <div class="history-header">
+      <h2>DEV CONSOLE</h2>
+      <button id="closeDevBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="devStats" class="intel-stats"></div>
+    <div id="devBody" class="intel-body">
+      <div id="devTiles" class="dev-tiles"></div>
+      <div class="dev-terminal">
+        <div class="dev-term-head">
+          <span class="dev-dot"></span><span class="dev-dot"></span><span class="dev-dot"></span>
+          <span class="dev-term-title">aegis://diagnostics</span>
+          <span class="dev-term-hint">type <code>help</code></span>
+        </div>
+        <div id="devFeed" class="dev-feed"></div>
+        <form id="devForm" class="dev-prompt" autocomplete="off">
+          <span class="dev-glyph">aegis@localhost:~$</span>
+          <input id="devInput" type="text" spellcheck="false" placeholder="help" maxlength="120" aria-label="Developer command" />
+          <button id="devRunBtn" type="submit" class="btn-engine">[ RUN ]</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <!-- V2 Scan History Drawer -->
+  <aside id="historyPanel" class="history-panel hidden">
+    <div class="history-header">
+      <h2>SCAN HISTORY</h2>
+      <button id="closeHistoryBtn" class="btn-engine">[ CLOSE ]</button>
+    </div>
+    <div id="historyList" class="history-list">
+      <div class="log-line muted">No scans recorded yet.</div>
+    </div>
+  </aside>
+
+  <script src="app.js?v=23"></script>
+</body>
+</html>

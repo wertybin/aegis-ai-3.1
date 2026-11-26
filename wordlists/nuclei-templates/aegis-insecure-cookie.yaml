@@ -1,0 +1,22 @@
+id: aegis-insecure-cookie
+info:
+  name: AegisAI Lab - Insecure Session Cookie
+  author: aegis-ai
+  severity: medium
+  description: Set-Cookie is missing HttpOnly and SameSite protections.
+  tags: aegis,cookie,session
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/login"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "Set-Cookie:"
+      - type: word
+        part: header
+        words:
+          - "HttpOnly"
+        negative: true
