@@ -301,17 +301,8 @@ Agent page: type a task, enter your own localhost URL (or set `AEGIS_DEFAULT_TAR
 
 Telegram commands: `/start` · `/menu` · `/help` · `/scan [target] [task]` · `/stop` · `/status` · `/pipeline` · `/report` · `/gates` · `/tools` · `/profile` · `/owner`. `/scan` starts immediately (60 s per-chat cooldown); `/pipeline` runs DAST → Audit → Agent with live SSE progress; `/stop` cancels the active run cooperatively.
 
-## 20. Demo Scenario
 
-The 120-second recording script is in `docs/DEMO_SCRIPT.md`. Reproducible driver:
-
-```powershell
-.\.venv\Scripts\python.exe demo\run_demo.py --no-open
-```
-
-Timeline: 0:00 problem · 0:15 authorized target · 0:30 the model selects ≥2 real tools · 0:50 real findings and correlation · 1:20 attack graph and BEFORE/AFTER · 1:40 remediation and final report. Final verified real run (2026-11-24): **`ollama-function-calling`, `qwen2.5:14b`, 6 tool calls (browser → httpx → Katana → api_security → Semgrep), 27 real findings**. Earlier Gemini run (2026-11-22): `gemini-function-calling`, `gemini-3.1-flash-lite`, 4 calls (Semgrep → httpx → Katana → correlate_findings), 21 unique findings in ~262 s. Tool choice is adaptive, so numbers vary; quote what is on screen. Model and Semgrep latency can exceed 2 minutes, so the recording must be edited/compressed to ≤2:00 — never fake results.
-
-## 21. Testing Instructions
+## 20. Testing Instructions
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q tests
@@ -329,7 +320,7 @@ The same **99/99** suite passes locally. `START_ALL.cmd` / `start_all.ps1` start
 
 Telegram `/pipeline` opens a real DAST → Audit → Agent control panel. Each gate has four callbacks: `DAST`, `Audit`, `Agent` and `Full chain`. DAST/Audit use `POST /api/engine/start`, progress comes from decoded `GET /api/engine/stream/{scan_id}` SSE stage events, and `POST /api/engine/scans/{scan_id}/cancel` stops only the chat's own active scan. The Agent stage reuses the existing `/api/agent/run` path. A live callback test started a real DAST scan (`scan_20261124_204958_2a67c2`), streamed real Nmap/FFUF events and cancelled it at `20:50:20`; a separate live `paudit` callback completed `scan_20261124_205047_d911af` with score 10 and a real PDF.
 
-## 22. Limitations
+## 21. Limitations
 
 - Only localhost and explicitly configured local lab paths are in scope; remote targets are intentionally rejected.
 - The local Ollama model can be slow on limited hardware; the optional Gemini fallback can return HTTP 503 under load, and retries reduce but do not eliminate this.
@@ -343,7 +334,7 @@ Telegram `/pipeline` opens a real DAST → Audit → Agent control panel. Each g
 - `/stop` is cooperative, not a hard process kill: it aborts between model turns and every 500 ms inside guarded WSL tools. A cancelled run is not stored as the last result.
 - Live chat transport was verified by driving the real handler stack against a live chat through the Bot API: `/start`, the Gates callback, `/scan`, `/stop`, `/status`, `/report` and `/pipeline` all worked; the cancellation returned `cancelled=true`, the PDF was delivered with `sendDocument`, and the pipeline callback started/cancelled a real engine scan. Custom-emoji IDs were verified through `getStickerSet` + `getCustomEmojiStickers` (400/400 IDs), but a Premium client render cannot be forced from the server; the automatic Unicode downgrade remains the supported fallback.
 
-## 23. Where I Got Stuck
+## 22. Where I Got Stuck
 
 Seven real problems cost an evening and are now handled in code.
 
@@ -357,7 +348,7 @@ Seven real problems cost an evening and are now handled in code.
 
 A smaller one: WSL `testssl.sh` wrote JSON with absolute Windows paths into the repo root. I made WSL scripts script-relative through `AEGIS_ROOT` and excluded transient artefacts in `.gitignore`.
 
-## 24. Future Improvements
+## 23. Future Improvements
 
 ### Local model and visible browser (Ollama)
 
